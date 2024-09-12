@@ -6,6 +6,7 @@ def home(request):
     # Filtre par mois et année
     mois = request.GET.get('mois')
     annee = request.GET.get('annee')
+    terminal = request.GET.get('terminal')
 
     volumes = VolumeMutalise.objects.all()
 
@@ -14,6 +15,9 @@ def home(request):
 
     if annee:
         volumes = volumes.filter(annee=annee)
+
+    if terminal:
+        volumes = volumes.filter(terminal=terminal)
 
     # Agrégation des volumes
     total_volume_essence = volumes.aggregate(Sum('volume_essence'))['volume_essence__sum'] or 0
@@ -36,6 +40,7 @@ def home(request):
     # Récupérer les options de mois et d'année pour les filtres
     mois_list = VolumeMutalise.Month.choices
     annee_list = VolumeMutalise.objects.values_list('annee', flat=True).distinct()
+    terminal_list = VolumeMutalise.objects.values_list('terminal', flat=True).distinct()
 
     # Passer les données au contexte
     context = {
@@ -45,5 +50,6 @@ def home(request):
         'volumes_par_terminal': volumes_par_terminal,
         'mois_list': mois_list,
         'annee_list': annee_list,
+        'terminal_list': terminal_list,
     }
     return render(request, 'home.html', context)
