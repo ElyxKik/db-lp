@@ -8,11 +8,52 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="m-4">
-    <header>
-        <h1 class="text-3xl font-semibold">Tableau de bord </h1>
-    </header>
+    <nav class="bg-white shadow-lg mb-9">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="flex justify-between items-center py-4">
+    
+            <!-- Logo -->
+            <div class="text-2xl font-bold text-gray-800">
+              <a href="#">Tableau de bord </a>
+            </div>
+    
+            <!-- Menu Hamburger pour mobile/tablette -->
+            <div class="md:hidden">
+              <button id="menu-btn" class="text-gray-800 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              </button>
+            </div>
+    
+            <!-- Menu Links -->
+            <div class="hidden md:flex space-x-6">
+              <a href="#" class="text-gray-800 hover:text-blue-500">Volume Mutualisé</a>
+              <a href="#" class="text-gray-800 hover:text-blue-500">Livraison Annuel</a>
+              <a href="#" class="text-gray-800 hover:text-blue-500">Autres</a>
+            </div>
+    
+          </div>
+        </div>
+    
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+          <a href="#" class="block text-center py-2 px-4 text-gray-800 hover:bg-gray-200">Volume Mutualisé</a>
+          <a href="#" class="block text-center py-2 px-4 text-gray-800 hover:bg-gray-200">Livraison Annuel</a>
+          <a href="#" class="block text-center py-2 px-4 text-gray-800 hover:bg-gray-200">Autres</a>
+        </div>
+    
+      </nav>
     <div>
     {% block content %}{% endblock  %}
     </div>
 </body>
+<script>
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('mobile-menu');
+
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
 </html>
