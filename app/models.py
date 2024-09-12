@@ -1,13 +1,14 @@
 from django.db import models
 from django.db.models.deletion import CASCADE
+from decimal import Decimal
 
 
 
 class VolumeMutalise(models.Model):
     terminal = models.CharField(max_length=200)
-    volume_gasoil = models.FloatField(default=0)
-    volume_essence = models.FloatField(default=0)
-    volume_petrol = models.FloatField(default=0)
+    volume_gasoil = models.DecimalField(max_digits=10, decimal_places=3, default=Decimal('0.000'))
+    volume_essence = models.DecimalField(max_digits=10, decimal_places=3, default=Decimal('0.000'))
+    volume_petrol = models.DecimalField(max_digits=10, decimal_places=3, default=Decimal('0.000'))
 
     class Month(models.TextChoices):
         JANVIER = 'Janvier'
