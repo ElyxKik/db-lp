@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="container mx-auto">
+        <h1 class="text-2xl font-bold text-center mb-8">Volumes par Terminal et Carburants</h1>
+
+        <!-- Formulaire de filtrage -->
+        <form method="GET" class="flex justify-center mb-8">
+            <div class="mr-4">
+                <label for="mois" class="block text-gray-700">Mois:</label>
+                <select id="mois" name="mois" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                    <option value="">Tous</option>
+                    <option value="Janvier">Janvier</option>
+                    <option value="Février">Février</option>
+                    <option value="Mars">Mars</option>
+                    <option value="Avril">Avril</option>
+                    <option value="Mai">Mai</option>
+                    <option value="Juin">Juin</option>
+                    <option value="Juillet">Juillet</option>
+                    <option value="Août">Août</option>
+                    <option value="Septembre">Septembre</option>
+                    <option value="Octobre">Octobre</option>
+                    <option value="Novembre">Novembre</option>
+                    <option value="Décembre">Décembre</option>
+                </select>
+            </div>
+            <div class="mr-4">
+                <label for="annee" class="block text-gray-700">Année:</label>
+                <select id="annee" name="annee" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                    <option value="">Toutes</option>
+                    {% for an in annee_list %}
+                    <option value="{{ an }}">{{ an }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">Filtrer</button>
+            </div>
+        </form>
+        <div class="grid grid-cols-3 gape-2">
+            <!-- Donut Chart pour la répartition totale des volumes par carburant -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-center mb-4">Répartition des Volumes par Carburant</h2>
+                <canvas id="donutChart"></canvas>
+            </div>
+
+            <!-- Bar Chart pour les volumes par terminal -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-center mb-4">Volumes par Terminal</h2>
+                <canvas id="barChart"></canvas>
+            </div>
+
+            <!-- Line Chart pour l'évolution des volumes par terminal -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-center mb-4">Évolution des Volumes par Terminal</h2>
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+        <!-- Données pour les graphiques -->
+        <script>
+            // Donut Chart pour la répartition des volumes par type de carburant
+            const donutData = {
+                labels: ['Essence', 'Gasoil', 'Pétrole'],
+                datasets: [{
+                    label: 'Volumes',
+                    data: [{{ total_volume_essence }}, {{ total_volume_gasoil }}, {{ total_volume_petrol }}],
+                    backgroundColor: ['#f87171', '#60a5fa', '#34d399']
+                }]
+            };
+
+            const donutConfig = {
+                type: 'doughnut',
+                data: donutData,
+                options: {
+                    responsive: true,
+                }
+            };
+
+            // Bar Chart pour les volumes par terminal
+            const barLabels = [
+                {% for volume in volumes_par_terminal %}
+                '{{ volume.terminal }}',
+                {% endfor %}
+            ];
+
+            const barData = {
+                labels: barLabels,
+                datasets: [
+                    {
+                        label: 'Essence',
+                        data: [
+                            {% for volume in volumes_par_terminal %}
+                            {{ volume.total_volume_essence }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: '#f87171'
+                    },
+                    {
+                        label: 'Gasoil',
+                        data: [
+                            {% for volume in volumes_par_terminal %}
+                            {{ volume.total_volume_gasoil }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: '#60a5fa'
+                    },
+                    {
+                        label: 'Pétrole',
+                        data: [
+                            {% for volume in volumes_par_terminal %}
+                            {{ volume.total_volume_petrol }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: '#34d399'
+                    }
+                ]
+            };
+
+            const barConfig = {
+                type: 'bar',
+                data: barData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            // Line Chart pour l'évolution des volumes par terminal
+            const lineLabels = [
+                {% for volume in volumes_par_terminal %}
+                '{{ volume.terminal }}',
+                {% endfor %}
+            ];
+
+            const lineData = {
+                labels: lineLabels,
+                datasets: [
+                    {
+                        label: 'Essence',
+                        data: [
+                            {% for volume in volumes_par_terminal %}
+                            {{ volume.total_volume_essence }},
+                            {% endfor %}
+                        ],
+                        fill: false,
+                        borderColor: '#f87171',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Gasoil',
+                        data: [
+                            {% for volume in volumes_par_terminal %}
+                            {{ volume.total_volume_gasoil }},
+                            {% endfor %}
+                        ],
+                        fill: false,
+                        borderColor: '#60a5fa',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Pétrole',
+                        data: [
+                            {% for volume in volumes_par_terminal %}
+                            {{ volume.total_volume_petrol }},
+                            {% endfor %}
+                        ],
+                        fill: false,
+                        borderColor: '#34d399',
+                        tension: 0.1
+                    }
+                ]
+            };
+
+            const lineConfig = {
+                type: 'line',
+                data: lineData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            // Initialisation des graphiques
+            const donutChartCtx = document.getElementById('donutChart').getContext('2d');
+            const donutChart = new Chart(donutChartCtx, donutConfig);
+
+            const barChartCtx = document.getElementById('barChart').getContext('2d');
+            const barChart = new Chart(barChartCtx, barConfig);
+
+            const lineChartCtx = document.getElementById('lineChart').getContext('2d');
+            const lineChart = new Chart(lineChartCtx, lineConfig);
+        </script>
+    </div>
+
+
+{% endblock  %}
