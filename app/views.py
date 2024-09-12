@@ -7,6 +7,7 @@ def home(request):
     mois = request.GET.get('mois')
     annee = request.GET.get('annee')
     terminal = request.GET.get('terminal')
+    volume_mutualise = VolumeMutalise.objects.all()
 
     volumes = VolumeMutalise.objects.all()
 
@@ -51,5 +52,6 @@ def home(request):
         'mois_list': mois_list,
         'annee_list': annee_list,
         'terminal_list': terminal_list,
+        'volume_mutualise': volume_mutualise,
     }
     return render(request, 'home.html', context)
